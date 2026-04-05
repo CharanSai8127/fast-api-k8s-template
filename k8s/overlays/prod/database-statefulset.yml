@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: prod
+  labels:
+    app: postgres
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        app.kubernetes.io/part-of: monitoring
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13
+          ports:
+            - containerPort: 5432
+
+          #  IMPORTANT: Correct PGDATA location
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+
+          envFrom:
+            - secretRef:
+                name: db-secret
+
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+
+          #  IMPORTANT: Mount PVC at correct parent directory
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+
+  # StatefulSet persistent volume creation
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: ebs-standard

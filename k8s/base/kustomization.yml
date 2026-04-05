@@ -1,0 +1,5 @@
+resources:
+  - frontend/
+  - backend/
+  - database/
+  - prestart/

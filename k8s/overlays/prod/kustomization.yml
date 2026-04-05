@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: prod
+
+resources:
+  - ../../base
+  - namespace.yml
+  - hpa/frontend-hpa.yml
+  - hpa/backend-hpa.yml
+  - netpol-prod.yml
+  - pvc/storage-class.yml
+  - httproute.yml
+  - database-statefulset.yml
+  - frontend-metrics-service.yml
+  - backend-metrics-service.yml
+  - database-metrics-service.yml
+
+configMapGenerator:
+  - name: backend-config
+    envs:
+      - config/backend.env
+  - name: frontend-config
+    envs:
+      - config/frontend.env
+
+secretGenerator:
+  - name: db-secret
+    envs:
+      - secrets/db.env
+    type: Opaque
+
+generatorOptions:
+  disableNameSuffixHash: true
+
