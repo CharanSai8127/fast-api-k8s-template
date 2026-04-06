@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: gateway-appset
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/<your-repo>.git
+        revision: main
+        directories:
+          - path: k8s/overlays/prod/gateway
+
+  template:
+    metadata:
+      name: gateway-prod
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+
+    spec:
+      project: default
+
+      source:
+        repoURL: https://github.com/<your-repo>.git
+        targetRevision: main
+        path: '{{path}}'
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: nginx-gateway
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: python-appset
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/<your-repo>.git
+        revision: main
+        directories:
+          - path: k8s/overlays/*
+          - path: k8s/overlays/prod/gateway
+            exclude: true
+
+  template:
+    metadata:
+      name: python-{{path.basename}}
+      annotations:
+        argocd.argoproj.io/sync-wave: "1"
+
+    spec:
+      project: default
+
+      source:
+        repoURL: https://github.com/<your-repo>.git
+        targetRevision: main
+        path: '{{path}}'
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
