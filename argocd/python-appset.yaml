@@ -3,9 +3,11 @@ kind: ApplicationSet
 metadata:
   name: python-appset
 spec:
+  goTemplate: true
+
   generators:
     - git:
-        repoURL: https://github.com/<your-repo>.git
+        repoURL: https://github.com/CharanSai8127/fast-api-k8s-template.git
         revision: main
         directories:
           - path: k8s/overlays/*
@@ -14,7 +16,7 @@ spec:
 
   template:
     metadata:
-      name: python-{{path.basename}}
+      name: python-{{.path.basename}}
       annotations:
         argocd.argoproj.io/sync-wave: "1"
 
@@ -22,13 +24,13 @@ spec:
       project: default
 
       source:
-        repoURL: https://github.com/<your-repo>.git
+        repoURL: https://github.com/CharanSai8127/fast-api-k8s-template.git
         targetRevision: main
-        path: '{{path}}'
+        path: "{{.path.path}}"
 
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path.basename}}'
+        namespace: "{{.path.basename}}"
 
       syncPolicy:
         automated:
