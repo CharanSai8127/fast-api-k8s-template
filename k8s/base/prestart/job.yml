@@ -4,8 +4,12 @@ metadata:
   name: prestart
   labels:
     app: prestart
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
   backoffLimit: 3
+  ttlSecondsAfterFinished: 100
   template:
     metadata:
       labels:
@@ -21,4 +25,3 @@ spec:
                 name: backend-config
             - secretRef:
                 name: db-secret
-
