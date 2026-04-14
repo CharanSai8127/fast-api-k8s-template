@@ -10,6 +10,7 @@ resources:
 
   - prometheus/exporters/postgres-exporter.yml
   - prometheus/exporters/kube-events-exporter.yml
+  - prometheus/exporters/kube-events-config.yml
 
   - alertmanager/alertmanager.yml
   - alertmanager/alertmanager-config.yml
