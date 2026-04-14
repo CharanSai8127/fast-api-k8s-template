@@ -5,9 +5,14 @@ metadata:
   namespace: monitoring
 data:
   config.yaml: |
+    logLevel: info
+    logFormat: json
+
     route:
       routes:
         - match:
             - receiver: "stdout"
+
     receivers:
       - name: "stdout"
+        stdout: {}
