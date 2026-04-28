@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: kube-events-exporter
   namespace: monitoring
-  labels:
-    app: kube-events-exporter
 spec:
   replicas: 1
   selector:
@@ -20,13 +18,13 @@ spec:
         - name: kube-events-exporter
           image: ghcr.io/opsgenie/kubernetes-event-exporter:v0.11
           args:
-            - --config=/config/config.yaml   #IMPORTANT
+            - --conf=/config/config.yaml   # ✅ FIXED
           ports:
             - name: metrics
               containerPort: 9102
           volumeMounts:
             - name: config
-              mountPath: /config             #FIXED PATH
+              mountPath: /config
               readOnly: true
       volumes:
         - name: config
